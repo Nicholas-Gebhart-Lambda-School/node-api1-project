@@ -2,7 +2,7 @@ const express = require("express");
 const cors = require("cors");
 const server = express();
 
-const db = require("./data/db.js");
+const db = require("./data/db");
 
 server.use(express.json());
 server.use(cors());
@@ -27,19 +27,24 @@ server.get("/api/users", (req, res) => {
 
 server.get("/api/users/:id", (req, res) => {
   const { id } = req.params;
-  console.log(id);
 
   db.findById(id)
     .then(user => {
       if (user) {
         res.status(200).json(user);
+      } else {
+        res.status(404).json({ response: "User does not exist" });
       }
-      res.status(404).json({ response: "user does not exist" });
     })
+    .catch(err => res.status(500).json({ response: "Error", err: err }));
+});
+
+server.delete("/api/users/:id", (req, res) => {
+  const user = req.params;
+  db.remove(user.id)
+    .then(user => res.status(200).json(user))
     .catch(err =>
-      res
-        .status(500)
-        .json({ response: "you have made a mistake my dude", err: err })
+      res.status(500).json({ response: "you have goofed", err: err })
     );
 });
 
