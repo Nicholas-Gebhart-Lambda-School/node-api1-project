@@ -48,5 +48,19 @@ server.delete("/api/users/:id", (req, res) => {
     );
 });
 
+server.put("/api/users/:id", (req, res) => {
+  const { id } = req.params;
+  const user = req.body;
+  db.update(id, user)
+    .then(user => {
+      if (user === 1) {
+        res.status(200).json(user);
+      } else {
+        res.status(404).json({ response: "user does not exist" });
+      }
+    })
+    .catch(err => res.status(500).json({ response: "you goofed", err: err }));
+});
+
 const port = 8000;
 server.listen(port, () => console.log("port is running on 8000"));
